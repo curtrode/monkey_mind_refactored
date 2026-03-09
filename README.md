@@ -64,6 +64,10 @@ The `MonkeyMind` module generates sentences by randomly combining:
 
 Each voice has its own word pool and interval timing, creating an organic, overlapping conversation effect.
 
+## Roadmap
+
+- **Flexible gender pairings**: Allow any combination of voices — him/him, her/her, him/they, they/her, they/they, etc. — moving beyond the current fixed him/her duet to support a wider range of identity and relationship dynamics
+
 ## Credits
 
 - **Original Program**: Theo Lutz (1959) — *Stochastische Texte*
