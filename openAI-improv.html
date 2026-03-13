@@ -161,17 +161,30 @@
     margin-bottom: 16px;
   }
 
-  .overlay-link { margin-bottom: 20px; }
-
-  .overlay-link a {
+  .top-nav {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
     font-size: 11px;
+    z-index: 101;
+  }
+
+  .top-nav a {
     color: #888;
     text-decoration: none;
     border-bottom: 1px solid #444;
     transition: color 0.2s, border-color 0.2s;
   }
 
-  .overlay-link a:hover { color: #ccc; border-color: #888; }
+  .top-nav a:hover { color: #ccc; border-color: #888; }
+
+  .top-nav a:focus-visible { outline: 2px solid #888; outline-offset: 2px; }
+
+  .top-nav .sep {
+    color: #444;
+    margin: 0 6px;
+  }
 
   .overlay-setup { margin-top: 20px; }
   .overlay-setup .hint { font-size: 11px; color: #666; margin-top: 6px; }
@@ -206,15 +219,11 @@
 <body>
 
 <div class="overlay" id="overlay" role="dialog" aria-label="Monkey Mind Improvisation — start screen">
+  <div class="top-nav">
+    <a href="index.html">duet</a><span class="sep">/</span><a href="excerpt.html">about this piece</a><span class="sep">/</span><a href="https://github.com/curtrode/monkey_mind">source</a><span class="sep">/</span><a href="https://curtrode.com">curtrode.com</a>
+  </div>
   <div class="overlay-top">
     <div class="overlay-info">
-      <div class="overlay-link">
-        <a href="index.html">duet version</a>
-        <span style="font-size:11px;color:#444;margin:0 6px;">/</span>
-        <a href="excerpt.html">about this piece</a>
-        <span style="font-size:11px;color:#444;margin:0 6px;">/</span>
-        <a href="https://github.com/curtrode/monkey_mind">source</a>
-      </div>
       <h1 class="overlay-title">MONKEY MIND</h1>
       <p class="overlay-subtitle">improvisation</p>
       <p class="overlay-desc">
@@ -640,7 +649,7 @@
 
   // ── Overlay ──
   apiKeyInput.addEventListener('click', function (e) { e.stopPropagation(); });
-  document.querySelector('.overlay-link').addEventListener('click', function (e) { e.stopPropagation(); });
+  document.querySelector('.top-nav').addEventListener('click', function (e) { e.stopPropagation(); });
   document.querySelector('.overlay-setup').addEventListener('click', function (e) { e.stopPropagation(); });
 
   var storedKey = localStorage.getItem('mm_apikey') || null;

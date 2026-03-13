@@ -162,30 +162,33 @@
     margin-bottom: 16px;
   }
 
-  .overlay-link {
-    margin-bottom: 20px;
+  .top-nav {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 11px;
+    z-index: 101;
   }
 
-  .overlay-link a {
-    font-size: 11px;
+  .top-nav a {
     color: #888;
     text-decoration: none;
     border-bottom: 1px solid #444;
     transition: color 0.2s, border-color 0.2s;
   }
 
-  .overlay-link a:hover {
+  .top-nav a:hover {
     color: #ccc;
     border-color: #888;
   }
 
-  .overlay-link a:focus-visible {
+  .top-nav a:focus-visible {
     outline: 2px solid #888;
     outline-offset: 2px;
   }
 
-  .overlay-link-sep {
-    font-size: 11px;
+  .top-nav .sep {
     color: #444;
     margin: 0 6px;
   }
@@ -239,17 +242,11 @@
 <body>
 
 <div class="overlay" id="overlay" role="dialog" aria-label="Monkey Mind — start screen">
+  <div class="top-nav">
+    <a href="openAI-improv.html">improvisation</a><span class="sep">/</span><a href="excerpt.html">about this piece</a><span class="sep">/</span><a href="https://github.com/curtrode/monkey_mind">source</a><span class="sep">/</span><a href="https://curtrode.com">curtrode.com</a>
+  </div>
   <div class="overlay-top">
     <div class="overlay-info">
-      <div class="overlay-link">
-        <a href="openAI-improv.html">improvisation</a>
-        <span class="overlay-link-sep">/</span>
-        <a href="excerpt.html">about this piece</a>
-        <span class="overlay-link-sep">/</span>
-        <a href="https://github.com/curtrode/monkey_mind">source</a>
-        <span class="overlay-link-sep">/</span>
-        <a href="https://curtrode.com">curtrode.com</a>
-      </div>
       <h1 class="overlay-title">MONKEY MIND</h1>
       <p class="overlay-subtitle">Too many tabs open</p>
       <p class="overlay-desc">
@@ -433,7 +430,7 @@
     e.stopPropagation();
   });
 
-  document.querySelector('.overlay-link').addEventListener('click', function (e) {
+  document.querySelector('.top-nav').addEventListener('click', function (e) {
     e.stopPropagation();
   });
 
