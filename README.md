@@ -44,6 +44,8 @@ The improvisation prototype (`openAI-improv.html`) demonstrates the single-voice
 │   └── her.css             # "Her" character styling
 ├── application_docs/       # Banff residency application materials
 │   ├── Word_docs/          # Source documents
+│   ├── markdown/           # Markdown sources + pandoc/weasyprint PDF pipeline
+│   ├── submission/         # Final PDFs for SlideRoom upload
 │   └── legacy/             # Superseded drafts
 ├── next_phase_planning/    # Multi-model development notes
 └── archive/                # Earlier iterations and visual mockups
