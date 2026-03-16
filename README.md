@@ -33,6 +33,7 @@ The improvisation prototype (`openAI-improv.html`) demonstrates the single-voice
 ├── index.html              # Main piece — two-voice stochastic duet with TTS
 ├── openAI-improv.html      # Improvisation prototype (single voice, OpenAI)
 ├── portfolio.html          # Portfolio — work-in-progress excerpt (8-page printable)
+├── monkey_mind_session_transcript.pdf  # Improv session transcript
 ├── stochastic_thing2.html  # "Him" voice generator (standalone)
 ├── stochastic_thing3.html  # "Her" voice generator (standalone)
 ├── js/
@@ -41,6 +42,10 @@ The improvisation prototype (`openAI-improv.html`) demonstrates the single-voice
 │   ├── base.css            # Shared styles
 │   ├── him.css             # "Him" character styling
 │   └── her.css             # "Her" character styling
+├── application_docs/       # Banff residency application materials
+│   ├── Word_docs/          # Source documents
+│   └── legacy/             # Superseded drafts
+├── next_phase_planning/    # Multi-model development notes
 └── archive/                # Earlier iterations and visual mockups
 ```
 
