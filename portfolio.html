@@ -305,13 +305,13 @@
     <strong>The Engine</strong> (p. 2–3) shows the stochastic generation logic — how subjects, predicates, and conjunctions are combined. Note the simplicity: a single function assembles each phrase.
   </p>
   <p>
-    <strong>The Word Pools</strong> (p. 4–7) are the duet's raw material. Two voices share most vocabulary but diverge in small, deliberate ways. Empty strings in the arrays are intentional — they create gaps, half-sentences, silence.
+    <strong>The Word Pools</strong> (p. 4–5) are the duet's raw material. Two voices share most vocabulary but diverge in small, deliberate ways. Empty strings in the arrays are intentional — they create gaps, half-sentences, silence.
   </p>
   <p>
-    <strong>Sample Output</strong> (p. 8–9) captures the two-voice stochastic stage as it appears in the terminal interface.
+    <strong>Sample Output</strong> (p. 6) captures the two-voice stochastic stage as it appears in the terminal interface.
   </p>
   <p>
-    <strong>Improvisation Prototype</strong> (p. 10) The live monologue version extends this same vocabulary and interface into a staged drift from stochastic generation to LLM-driven improvisation.
+    <strong>Improvisation</strong> (p. 7–8) The system prompts that direct the LLM through three phases of improvisation, with sample output from each phase.
   </p>
 
   <span class="page-num">1</span>
@@ -445,52 +445,69 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- PAGES 4–7: Word Pools                                         -->
+<!-- PAGES 4–5: Word Pools (condensed, side-by-side)               -->
 <!-- ============================================================ -->
 <div class="page page-break">
 
   <h2>The Word Pools</h2>
 
   <p>
-    Each voice is initialized with its own arrays of subjects, predicates, and conjunctions. The two voices share most of their vocabulary but diverge in small, deliberate ways — giving each a subtle personality within the shared language of the relationship. Words highlighted in <span style="background:#fff3cd;padding:1pt 4pt;border:1px solid #e0c97a;border-radius:2px;font-size:9pt;">yellow</span> are unique to that voice.
-  </p>
-  <p>
-    Empty strings appear intentionally throughout the arrays. When selected, they produce gaps — silence, half-formed thoughts, lines that trail into nothing. The ratio of empty to filled entries controls how often each voice falls quiet.
+    Each voice is initialized with its own arrays of subjects, predicates, and conjunctions. The two voices share most of their vocabulary but diverge in small, deliberate ways — giving each a subtle personality within the shared language of the relationship. Words highlighted in <span style="background:#fff3cd;padding:1pt 4pt;border:1px solid #e0c97a;border-radius:2px;font-size:9pt;">yellow</span> are unique to that voice. Empty strings appear intentionally — when selected, they produce gaps, silence, lines that trail into nothing.
   </p>
 
-  <br>
-
-  <span class="voice-tag him">Him — 3500ms</span>
-
-  <div class="pool">
-    <div class="pool-label">Subjects</div>
-    <div class="pool-words">
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span>you are my</span>
-      <span>you are not my</span>
-      <span>we are our</span>
-      <span>we are not our</span>
-      <span>I am your</span>
-      <span>I am not your</span>
-      <span>he was my</span>
-      <span>he was not my</span>
-      <span>she was my</span>
-      <span>she was not my</span>
-      <span>she was your</span>
-      <span>we were not your</span>
-      <span>we were my</span>
-      <span>we were not my</span>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16pt; margin-top: 12pt;">
+    <div>
+      <span class="voice-tag him">Him — 3500ms</span>
+      <div class="pool">
+        <div class="pool-label">Subjects</div>
+        <div class="pool-words" style="font-size: 8.5pt; line-height: 1.6;">
+          <span class="empty">[silence] ×7</span>
+          <span>you are my</span>
+          <span>you are not my</span>
+          <span>we are our</span>
+          <span>we are not our</span>
+          <span>I am your</span>
+          <span>I am not your</span>
+          <span>he was my</span>
+          <span>he was not my</span>
+          <span>she was my</span>
+          <span>she was not my</span>
+          <span>she was your</span>
+          <span>we were not your</span>
+          <span>we were my</span>
+          <span>we were not my</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <span class="voice-tag her">Her — 2000ms</span>
+      <div class="pool">
+        <div class="pool-label">Subjects</div>
+        <div class="pool-words" style="font-size: 8.5pt; line-height: 1.6;">
+          <span class="empty">[silence] ×6</span>
+          <span>you are my</span>
+          <span>you are not my</span>
+          <span>we are our</span>
+          <span>we are not our</span>
+          <span>I am your</span>
+          <span>I am not your</span>
+          <span>he was my</span>
+          <span>he was not my</span>
+          <span>she was my</span>
+          <span>she was not my</span>
+          <span>she was your</span>
+          <span class="unique">I am not</span>
+          <span class="unique">you are completely</span>
+          <span>we were not your</span>
+          <span>we were my</span>
+          <span>we were not my</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="annotation">
-    7 of 21 entries are empty — roughly one-third of the time, the subject position is silent. The relational pronouns cycle through tenses and possessives: present ("you are"), past ("she was"), negated ("I am not"). Every subject frames a claim about belonging.
+  <div class="annotation" style="margin-top: 12pt;">
+    Roughly one-third of subject entries are empty — silence as vocabulary. The relational pronouns cycle through tenses and possessives: present ("you are"), past ("she was"), negated ("I am not"). "Her" adds two unique subjects: <em>"I am not"</em> (a bare negation, identity dissolving into predicate) and <em>"you are completely"</em> (an intensifier that charges whatever follows).
   </div>
 
   <span class="page-num">4</span>
@@ -498,44 +515,82 @@
 
 <div class="page page-break">
 
-  <div class="pool">
-    <div class="pool-label">Predicates</div>
-    <div class="pool-words">
-      <span class="empty">[silence]</span>
-      <span>gift</span>
-      <span>silence</span>
-      <span>strength</span>
-      <span>value</span>
-      <span>one</span>
-      <span>meadow</span>
-      <span>dream</span>
-      <span>marrow</span>
-      <span>supply</span>
-      <span>horses</span>
-      <span>breath</span>
-      <span>heart</span>
-      <span class="unique">map</span>
-      <span>novelty</span>
-      <span>quiet</span>
-      <span>distance</span>
-      <span>yellow bird</span>
-      <span class="unique">cotton</span>
-      <span>darkness</span>
-      <span>freedom</span>
-      <span>expense</span>
-      <span>age</span>
-      <span>anger</span>
-      <span>moth</span>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16pt;">
+    <div>
+      <div class="pool">
+        <div class="pool-label">Predicates — Him</div>
+        <div class="pool-words" style="font-size: 8.5pt; line-height: 1.6;">
+          <span class="empty">[silence]</span>
+          <span>gift</span>
+          <span>silence</span>
+          <span>strength</span>
+          <span>value</span>
+          <span>one</span>
+          <span>meadow</span>
+          <span>dream</span>
+          <span>marrow</span>
+          <span>supply</span>
+          <span>horses</span>
+          <span>breath</span>
+          <span>heart</span>
+          <span class="unique">map</span>
+          <span>novelty</span>
+          <span>quiet</span>
+          <span>distance</span>
+          <span>yellow bird</span>
+          <span class="unique">cotton</span>
+          <span>darkness</span>
+          <span>freedom</span>
+          <span>expense</span>
+          <span>age</span>
+          <span>anger</span>
+          <span>moth</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="pool">
+        <div class="pool-label">Predicates — Her</div>
+        <div class="pool-words" style="font-size: 8.5pt; line-height: 1.6;">
+          <span class="empty">[silence] ×5</span>
+          <span class="unique">right</span>
+          <span class="unique">wrong</span>
+          <span>gift</span>
+          <span>silence</span>
+          <span>strength</span>
+          <span>value</span>
+          <span>one</span>
+          <span>meadow</span>
+          <span>dream</span>
+          <span>marrow</span>
+          <span>supply</span>
+          <span>horses</span>
+          <span>breath</span>
+          <span>heart</span>
+          <span class="unique">road</span>
+          <span>novelty</span>
+          <span>quiet</span>
+          <span>distance</span>
+          <span>yellow bird</span>
+          <span class="unique">forsythia</span>
+          <span>darkness</span>
+          <span>freedom</span>
+          <span>expense</span>
+          <span>age</span>
+          <span>anger</span>
+          <span>moth</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="annotation">
-    The predicates mix registers: abstract emotional states (<em>silence, darkness, freedom, anger</em>), pastoral imagery (<em>meadow, horses, yellow bird</em>), and the body (<em>marrow, breath, heart</em>). <em>Map</em> and <em>cotton</em> are unique to "him" — concrete, tactile, navigational.
+  <div class="annotation" style="margin-top: 8pt;">
+    The predicates mix registers: abstract emotional states (<em>silence, darkness, freedom, anger</em>), pastoral imagery (<em>meadow, horses, yellow bird</em>), and the body (<em>marrow, breath, heart</em>). His unique words — <em>map</em> and <em>cotton</em> — are concrete, tactile, navigational. Hers — <em>right, wrong, road, forsythia</em> — add moral judgment, movement, and the most specific sensory word in the piece.
   </div>
 
-  <div class="pool">
-    <div class="pool-label">Conjunctions</div>
-    <div class="pool-words">
+  <div class="pool" style="margin-top: 12pt;">
+    <div class="pool-label">Conjunctions (shared)</div>
+    <div class="pool-words" style="font-size: 8.5pt; line-height: 1.6;">
       <span class="empty">[silence]</span>
       <span>and</span>
       <span>or</span>
@@ -548,124 +603,21 @@
   </div>
 
   <div class="annotation">
-    The conjunctions include three parenthetical interjections — whispered asides that break the formal sentence pattern. These are the only moments where a voice addresses its listener directly.
+    The parenthetical interjections — whispered asides that break the formal sentence pattern — are shared. Both voices have the same capacity for direct address; neither has a monopoly on vulnerability.
   </div>
 
   <span class="page-num">5</span>
 </div>
 
-<div class="page page-break">
-
-  <span class="voice-tag her">Her — 2000ms</span>
-
-  <div class="pool">
-    <div class="pool-label">Subjects</div>
-    <div class="pool-words">
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span>you are my</span>
-      <span>you are not my</span>
-      <span>we are our</span>
-      <span>we are not our</span>
-      <span>I am your</span>
-      <span>I am not your</span>
-      <span>he was my</span>
-      <span>he was not my</span>
-      <span>she was my</span>
-      <span>she was not my</span>
-      <span>she was your</span>
-      <span class="unique">I am not</span>
-      <span class="unique">you are completely</span>
-      <span>we were not your</span>
-      <span>we were my</span>
-      <span>we were not my</span>
-    </div>
-  </div>
-
-  <div class="annotation">
-    "Her" voice adds two unique subjects: <em>"I am not"</em> (a bare negation, unfinished — identity dissolving into predicate) and <em>"you are completely"</em> (an intensifier that charges whatever follows). She also has one fewer silence, making her slightly more verbal.
-  </div>
-
-  <span class="page-num">6</span>
-</div>
-
-<div class="page page-break">
-
-  <div class="pool">
-    <div class="pool-label">Predicates</div>
-    <div class="pool-words">
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="empty">[silence]</span>
-      <span class="unique">right</span>
-      <span class="unique">wrong</span>
-      <span>gift</span>
-      <span>silence</span>
-      <span>strength</span>
-      <span>value</span>
-      <span>one</span>
-      <span>meadow</span>
-      <span>dream</span>
-      <span>marrow</span>
-      <span>supply</span>
-      <span>horses</span>
-      <span>breath</span>
-      <span>heart</span>
-      <span class="unique">road</span>
-      <span>novelty</span>
-      <span>quiet</span>
-      <span>distance</span>
-      <span>yellow bird</span>
-      <span class="unique">forsythia</span>
-      <span>darkness</span>
-      <span>freedom</span>
-      <span>expense</span>
-      <span>age</span>
-      <span>anger</span>
-      <span>moth</span>
-    </div>
-  </div>
-
-  <div class="annotation">
-    "Her" predicates include 4 more silences — but her faster interval (2000ms vs 3500ms) means she generates more frequently despite the gaps. Her unique words: <em>right</em> and <em>wrong</em> (moral judgment), <em>road</em> (movement, departure), and <em>forsythia</em> (a bright yellow flowering shrub — the most specific, sensory word in the entire piece).
-  </div>
-
-  <div class="pool">
-    <div class="pool-label">Conjunctions</div>
-    <div class="pool-words">
-      <span class="empty">[silence]</span>
-      <span>and</span>
-      <span>or</span>
-      <span>but</span>
-      <span>therefore</span>
-      <span>(please listen)</span>
-      <span>(I hear you)</span>
-      <span>(please don't)</span>
-    </div>
-  </div>
-
-  <div class="annotation">
-    Identical conjunctions. The parenthetical asides — <em>(please listen)</em>, <em>(I hear you)</em>, <em>(please don't)</em> — are shared. Both voices have the same capacity for direct address; neither has a monopoly on vulnerability.
-  </div>
-
-  <span class="page-num">7</span>
-</div>
-
 <!-- ============================================================ -->
-<!-- PAGES 8–10: Sample Output                                     -->
+<!-- PAGE 6: Sample Output (condensed)                             -->
 <!-- ============================================================ -->
 <div class="page page-break">
 
   <h2>Sample Output</h2>
 
   <p>
-    The following captures both voices running simultaneously, as they appear in the terminal interface. "Him" generates on the left in green at 3500ms intervals; "her" on the right in blue at 2000ms. Lines accumulate from top to bottom; older lines scroll off. Each run produces new combinations and rhythms, though particular lines may recur.
+    The following captures both voices running simultaneously, as they appear in the terminal interface. "Him" generates on the left in green at 3500ms intervals; "her" on the right in blue at 2000ms. Lines accumulate from top to bottom; older lines scroll off. Each run produces new combinations and rhythms.
   </p>
 
   <div class="output-container">
@@ -724,101 +676,108 @@
     </div>
   </div>
 
-  <span class="page-num">8</span>
-</div>
-
-<div class="page page-break">
-
-  <div class="output-container">
-    <div class="output-stage">
-      <div class="output-voice voice-him">
-        we are our silence and you are my dream<br>
-        <br>
-        she was your moth (please listen) I am your map<br>
-        <br>
-        &nbsp;&nbsp;marrow therefore he was not my gift<br>
-        <br>
-        you are not my darkness or we were my freedom<br>
-        <br>
-        I am not your breath but she was my horses<br>
-        <br>
-        he was my strength (I hear you) we are not our cotton<br>
-        <br>
-        &nbsp;&nbsp;anger and you are my quiet<br>
-        <br>
-        she was not my yellow bird (please don't) we were not your age
-      </div>
-      <div class="output-divider"></div>
-      <div class="output-voice voice-her">
-        I am not&nbsp;&nbsp;right therefore you are my silence<br>
-        <br>
-        you are completely wrong (please listen) she was your breath<br>
-        <br>
-        we were not my heart or&nbsp;&nbsp;forsythia<br>
-        <br>
-        he was my dream but I am not your road<br>
-        <br>
-        she was not my freedom and we are our darkness<br>
-        <br>
-        &nbsp;&nbsp;value (I hear you) you are not my gift<br>
-        <br>
-        we were my horses therefore she was my anger<br>
-        <br>
-        I am your meadow or you are completely distance<br>
-        <br>
-        &nbsp;&nbsp;moth but we are not our supply<br>
-        <br>
-        you are my quiet (please don't)&nbsp;&nbsp;novelty
-      </div>
-    </div>
-  </div>
-
-  <div class="annotation" style="margin-top: 16pt;">
+  <div class="annotation" style="margin-top: 12pt;">
     Note the gaps — where an empty string was selected for subject or predicate, the line stumbles, trails off, or begins mid-thought. "Her" voice produces more lines in the same span (faster interval) but also falls silent more often (more empty predicates). The effect: two distinct rhythms of anxiety, overlapping without synchronizing.
   </div>
 
-  <span class="page-num">9</span>
+  <span class="page-num">6</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGES 7–8: Improvisation                                      -->
+<!-- ============================================================ -->
+<div class="page page-break">
+
+  <h2>Improvisation</h2>
+
+  <p>
+    The improvisation prototype stages the transition that the stochastic engine cannot make on its own. A single voice runs the same combinatory grammar shown above, accumulating approximately twenty lines of stochastic output. That accumulated language is then fed as context to an LLM (GPT-4o), which takes over generation in three phases. The author's role shifts from building the grammar to directing the model — shaping each phase through system prompts that function as compositional instructions.
+  </p>
+
+  <h3>The System Prompts</h3>
+
+  <p>
+    Each phase is defined by a prompt that tells the LLM how to continue. These are the key directorial passages:
+  </p>
+
+  <div style="background: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 3px; padding: 10pt 14pt; margin-bottom: 10pt;">
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8pt; color: #888; text-transform: uppercase; letter-spacing: 0.5pt; margin-bottom: 6pt;">Echo</div>
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8.5pt; line-height: 1.5; color: #444;">
+      Continue generating lines in EXACTLY this style. Stay very close to the original grammar patterns. Use the same word pools, the same two-clause sentence structure, the same parenthetical asides. You are still the stochastic engine, just continuing.
+    </div>
+  </div>
+
+  <div style="background: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 3px; padding: 10pt 14pt; margin-bottom: 10pt;">
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8pt; color: #888; text-transform: uppercase; letter-spacing: 0.5pt; margin-bottom: 6pt;">Bend</div>
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8.5pt; line-height: 1.5; color: #444;">
+      The rigid two-clause template is loosening. You may now: let a line be a single clause or fragment&hellip; ask a question&hellip; introduce new words that feel like they belong in the emotional world of the piece&hellip; let a parenthetical aside become the whole line&hellip; reference or transform a phrase from earlier in your output. Something like intention is emerging.
+    </div>
+  </div>
+
+  <div style="background: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 3px; padding: 10pt 14pt; margin-bottom: 10pt;">
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8pt; color: #888; text-transform: uppercase; letter-spacing: 0.5pt; margin-bottom: 6pt;">Drift</div>
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8.5pt; line-height: 1.5; color: #444;">
+      You have been listening to yourself. Now you are improvising freely — like a jazz soloist who heard the head and is now soloing over the changes. The original vocabulary, rhythms, and obsessions are still in your blood, but you are going somewhere new. You are finding language for things the stochastic engine could not say.
+    </div>
+  </div>
+
+  <div class="annotation">
+    Each prompt receives the full context of everything the voice has said so far. The LLM does not start fresh — it inherits its own history, making each performance cumulative and unrepeatable. Temperature increases across phases (0.7 → 0.9 → 1.0), loosening the model's adherence to pattern.
+  </div>
+
+  <span class="page-num">7</span>
 </div>
 
 <div class="page page-break">
 
-  <h2>Improvisation Prototype</h2>
+  <h3>Sample Output by Phase</h3>
 
   <p>
-    The improvisation prototype stages the transition that the stochastic engine cannot make on its own. A single voice runs the same combinatory grammar shown above, accumulating approximately twenty lines of stochastic output. That accumulated language is then fed as context to an LLM, which takes over generation in three phases:
+    The following lines are from a single run of the prototype. Each performance produces different language.
   </p>
 
-  <p style="margin-left: 0.2in;">
-    <strong>Echo</strong> &mdash; The LLM continues generating in the stochastic style: same word pools, same two-clause structure, same parenthetical asides. It is still the engine, just continuing.<br><br>
-    <strong>Bend</strong> &mdash; The grammar loosens. New words enter. Fragments lengthen. The LLM may ask a question, let a parenthetical aside become the whole line, or reference something it said earlier. Something like intention is emerging.<br><br>
-    <strong>Drift</strong> &mdash; Free improvisation. The original vocabulary and rhythms are still present as memory, but the voice is going somewhere new &mdash; naming specific places, contradicting earlier lines, finding language for things the stochastic engine could not say.
-  </p>
+  <div class="output-container" style="padding: 16pt 20pt;">
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8pt; color: #555; text-transform: uppercase; letter-spacing: 1pt; margin-bottom: 8pt;">Echo</div>
+    <div class="output-voice" style="color: #5a7; line-height: 2;">
+      you are my silence or I am not your meadow<br>
+      we are not our darkness or you are my forsythia<br>
+      she was not your supply and I am not my darkness<br>
+      you are my road or we are not your silence
+    </div>
+  </div>
+
+  <div class="output-container" style="padding: 16pt 20pt;">
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8pt; color: #555; text-transform: uppercase; letter-spacing: 1pt; margin-bottom: 8pt;">Bend</div>
+    <div class="output-voice" style="color: #7cb; line-height: 2;">
+      (I hear you) am I your darkness?<br>
+      we were not my freedom nor are we your longing<br>
+      I am not your intention (please hold)<br>
+      (are you listening?) I am not your meadow nor am I my freedom<br>
+      am I your silence or the echo of your longing?
+    </div>
+  </div>
+
+  <div class="output-container" style="padding: 16pt 20pt;">
+    <div style="font-family: 'SF Mono','Menlo',monospace; font-size: 8pt; color: #555; text-transform: uppercase; letter-spacing: 1pt; margin-bottom: 8pt;">Drift</div>
+    <div class="output-voice" style="color: #9bd; line-height: 2;">
+      in the quiet of springtime &mdash; do you remember me?<br>
+      a field of fireflies &mdash; where we were almost whole<br>
+      under the bridge where we forgot our names<br>
+      in the amber light of dawn &mdash; did you whisper my name?<br>
+      in the rain &mdash; do you still hold my echo?<br>
+      in the trembling light &mdash; I almost remember you
+    </div>
+  </div>
 
   <p>
     The voice itself shifts with the language. During the stochastic phase, a synthetic machine voice speaks the lines. As the LLM takes over, an AI-generated voice replaces it. The transition is not just visible on screen but audible &mdash; mechanical speech giving way to something that sounds like a person trying to reach someone.
   </p>
 
-  <p>
-    Below is a sample of drift-phase output from one run of the prototype. Each performance produces different language.
+  <p style="margin-top: 8pt; font-size: 10pt; color: #666;">
+    The live prototype can be experienced at <a href="https://curtrode.github.io/monkey_mind/openAI-improv.html" style="color: #888; border-bottom: 1px solid #ccc;">curtrode.github.io/monkey_mind/openAI-improv.html</a> (requires an OpenAI API key; a <a href="https://youtu.be/-DCPQpnhN_s" style="color: #888; border-bottom: 1px solid #ccc;">video recording</a> and <a href="https://curtrode.github.io/monkey_mind/monkey_mind_session_transcript.pdf" style="color: #888; border-bottom: 1px solid #ccc;">full session transcript</a> are also available).
   </p>
 
-  <div class="output-container">
-    <div class="output-voice" style="color: #9bd; padding: 12pt 16pt; line-height: 2.2;">
-      there was a field where I practiced saying your name to no one<br>
-      the forsythia opened anyway<br>
-      (please listen) I kept the silence like a drawer of letters I revised but never sent<br>
-      we were our own distance and I mistook it for a meadow<br>
-      you are not my quiet anymore &mdash; you are the sound the house makes when it settles<br>
-      I have memorized the roads that lead away<br>
-      (I hear you) I have always heard you
-    </div>
-  </div>
-
-  <p style="margin-top: 12pt; font-size: 10pt; color: #666;">
-    The live prototype can be experienced at <a href="https://curtrode.github.io/monkey_mind/openAI-improv.html" style="color: #888; border-bottom: 1px solid #ccc;">curtrode.github.io/monkey_mind/openAI-improv.html</a> (requires an OpenAI API key; a <a href="https://youtu.be/-DCPQpnhN_s" style="color: #888; border-bottom: 1px solid #ccc;">video recording</a> is also available).
-  </p>
-
-  <span class="page-num">10</span>
+  <span class="page-num">8</span>
 </div>
 
 </body>
