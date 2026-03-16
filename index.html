@@ -279,7 +279,7 @@
     <button id="him-speed" class="him-ctrl" aria-label="Change him speed">[3500ms]</button>
     <button id="her-btn" class="her-ctrl" aria-label="Toggle her voice">[her:on]</button>
     <button id="her-speed" class="her-ctrl" aria-label="Change her speed">[2000ms]</button>
-    <button id="mute-btn" aria-label="Toggle listening">[mute]</button>
+    <button id="mute-btn" aria-label="Toggle listening">[listen]</button>
     <button id="voice-btn" style="display:none" aria-label="Toggle voice type">[voice:machine]</button>
   </nav>
 </header>
@@ -454,7 +454,7 @@
     }
     overlay.style.display = 'none';
     listening = false;
-    muteBtn.textContent = '[mute]';
+    muteBtn.textContent = '[listen]';
     if (storedApiKey) {
       voiceBtn.style.display = '';
     }
@@ -462,7 +462,7 @@
 
   document.querySelector('.cmd').addEventListener('click', function () {
     listening = false;
-    muteBtn.textContent = '[mute]';
+    muteBtn.textContent = '[listen]';
     muteBtn.classList.remove('active');
     speechSynthesis.cancel();
     overlay.style.display = '';
@@ -494,7 +494,7 @@
   muteBtn.addEventListener('click', function () {
     listening = !listening;
     if (!listening) speechSynthesis.cancel();
-    this.textContent = listening ? '[listening]' : '[mute]';
+    this.textContent = listening ? '[mute]' : '[listen]';
     this.classList.toggle('active', listening);
   });
 
