@@ -99,6 +99,14 @@
   .stage-bending    { color: #a96 !important; }
   .stage-drift      { color: #b85 !important; }
 
+  .model-tag {
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: #444;
+    padding: 2px 6px;
+    cursor: default;
+  }
+
   /* Overlay */
   .overlay {
     position: fixed;
@@ -230,7 +238,7 @@
 
 <div class="overlay" id="overlay">
   <div class="top-nav">
-    <a href="index.html">duet</a><span class="sep">/</span><a href="openAI-improv.html">openAI improv</a><span class="sep">/</span><a href="excerpt.html">about this piece</a><span class="sep">/</span><a href="https://github.com/curtrode/monkey_mind" target="_blank"><svg height="12" width="12" viewBox="0 0 16 16" style="vertical-align:-1px;margin-right:2px;fill:currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github</a><span class="sep">/</span><a href="https://curtrode.com" target="_blank">curtrode.com</a>
+    <a href="index.html">duet</a><span class="sep">/</span><a href="portfolio.html">about this piece</a><span class="sep">/</span><a href="https://github.com/curtrode/monkey_mind" target="_blank"><svg height="12" width="12" viewBox="0 0 16 16" style="vertical-align:-1px;margin-right:2px;fill:currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github</a><span class="sep">/</span><a href="https://curtrode.com" target="_blank">curtrode.com</a>
   </div>
   <div class="overlay-top">
     <div class="overlay-info">
@@ -264,7 +272,12 @@
   </div>
   <div class="controls">
     <span id="stage-label" class="stage-stochastic">[stochastic]</span>
+    <span id="model-display" class="model-tag"></span>
+    <button id="advance-btn">[advance]</button>
+    <button id="pause-btn">[pause]</button>
+    <button id="auto-btn">[auto:on]</button>
     <button id="restart-btn">[restart]</button>
+    <button id="print-btn">[print]</button>
   </div>
 </header>
 
@@ -275,6 +288,7 @@
   'use strict';
 
   // --- Configuration ---
+  var GEMINI_MODEL = 'gemini-2.5-flash';
   var STOCHASTIC_LINES = 20;
   var ECHOING_LINES = 10;
   var BENDING_LINES = 10;
@@ -306,13 +320,20 @@
   var apiKey = null;
   var stage = 'idle'; // idle, stochastic, echoing, bending, drift, done
   var allLines = [];
+  var phaseLog = [];
   var lineCount = 0;
   var timer = null;
+  var autoAdvance = true;
+  var paused = false;
 
   // --- DOM ---
   var overlay = document.getElementById('overlay');
   var main = document.getElementById('main');
   var stageLabel = document.getElementById('stage-label');
+  var modelDisplay = document.getElementById('model-display');
+  var advanceBtn = document.getElementById('advance-btn');
+  var pauseBtn = document.getElementById('pause-btn');
+  var autoBtn = document.getElementById('auto-btn');
   var apiKeyInput = document.getElementById('api-key');
   var keyStatus = document.getElementById('key-status');
 
@@ -327,6 +348,7 @@
     div.className = 'line-' + stageClass;
     main.appendChild(div);
     allLines.push(text);
+    phaseLog.push({ text: text.trim(), phase: stageClass });
     lineCount++;
 
     // Trim old lines if too many visible
@@ -349,6 +371,21 @@
     };
     stageLabel.textContent = labels[newStage] || '';
     stageLabel.className = 'stage-' + newStage;
+    modelDisplay.textContent = (newStage !== 'stochastic' && newStage !== 'idle') ? 'cloud:' + GEMINI_MODEL : '';
+    advanceBtn.style.display = (newStage === 'drift' || newStage === 'done') ? 'none' : '';
+  }
+
+  function advanceStage() {
+    if (stage === 'stochastic') {
+      if (!apiKey) return;
+      clearTimeout(timer);
+      setStage('echoing');
+      tick();
+    } else if (stage === 'echoing') {
+      setStage('bending');
+    } else if (stage === 'bending') {
+      setStage('drift');
+    }
   }
 
   // --- Stochastic generation ---
@@ -423,7 +460,7 @@
       }
     };
 
-    fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
+    fetch('https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent?key=' + apiKey, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody)
@@ -479,7 +516,7 @@
       var line = generateStochasticLine();
       addLine(line, 'stochastic');
 
-      if (lineCount >= STOCHASTIC_LINES) {
+      if (autoAdvance && lineCount >= STOCHASTIC_LINES) {
         setStage('echoing');
         timer = setTimeout(tick, IMPROV_INTERVAL);
         return;
@@ -496,18 +533,14 @@
 
         addLine(text, stage);
 
-        // Check for stage transitions
-        var improvLines = lineCount - STOCHASTIC_LINES;
-        if (stage === 'echoing' && improvLines >= ECHOING_LINES) {
-          setStage('bending');
-        } else if (stage === 'bending' && improvLines >= ECHOING_LINES + BENDING_LINES) {
-          setStage('drift');
-        }
-
-        // Drift runs for ~15 lines then ends
-        if (stage === 'drift' && improvLines >= ECHOING_LINES + BENDING_LINES + 15) {
-          setStage('done');
-          return;
+        // Check for stage transitions (only when auto-advance is on)
+        if (autoAdvance) {
+          var improvLines = lineCount - STOCHASTIC_LINES;
+          if (stage === 'echoing' && improvLines >= ECHOING_LINES) {
+            setStage('bending');
+          } else if (stage === 'bending' && improvLines >= ECHOING_LINES + BENDING_LINES) {
+            setStage('drift');
+          }
         }
 
         timer = setTimeout(tick, IMPROV_INTERVAL);
@@ -519,6 +552,7 @@
     // Reset
     main.innerHTML = '';
     allLines = [];
+    phaseLog = [];
     lineCount = 0;
     clearTimeout(timer);
     setStage('stochastic');
@@ -578,10 +612,62 @@
     overlay.style.display = '';
   });
 
+  advanceBtn.addEventListener('click', function () {
+    advanceStage();
+  });
+
+  pauseBtn.addEventListener('click', function () {
+    if (!paused) {
+      clearTimeout(timer);
+      paused = true;
+      pauseBtn.textContent = '[resume]';
+    } else {
+      paused = false;
+      pauseBtn.textContent = '[pause]';
+      tick();
+    }
+  });
+
+  autoBtn.addEventListener('click', function () {
+    autoAdvance = !autoAdvance;
+    autoBtn.textContent = autoAdvance ? '[auto:on]' : '[auto:off]';
+  });
+
   document.getElementById('restart-btn').addEventListener('click', function () {
     if (apiKey) {
+      paused = false;
+      pauseBtn.textContent = '[pause]';
+      advanceBtn.style.display = '';
       start();
     }
+  });
+
+  document.getElementById('print-btn').addEventListener('click', function () {
+    if (phaseLog.length === 0) return;
+    var colors = { stochastic: '#888', echoing: '#998', bending: '#a96', drift: '#b85' };
+    var html = '<!DOCTYPE html><html><head><title>Monkey Mind — Session</title>' +
+      '<style>' +
+      'body { background: #0a0a0a; color: #888; font-family: "SF Mono","Menlo","Monaco","Consolas",monospace; font-size: 13px; padding: 48px; max-width: 640px; line-height: 2.2; }' +
+      'h1 { color: #999; font-size: 20px; font-weight: normal; letter-spacing: 4px; margin-bottom: 4px; }' +
+      '.subtitle { font-style: italic; color: #998; margin-bottom: 8px; font-size: 13px; }' +
+      '.phase-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 24px; margin-bottom: 8px; }' +
+      '@media print { body { background: #fff; color: #222; } .phase-label { color: #666 !important; } div.line { color: #222 !important; } }' +
+      '</style></head><body>' +
+      '<h1>MONKEY MIND</h1><div class="subtitle">improvisation — session transcript</div>' +
+      '<div style="color:#444;font-size:10px;margin-bottom:24px;letter-spacing:1px">cloud — model: ' + GEMINI_MODEL + '</div>';
+    var currentPhase = null;
+    phaseLog.forEach(function (entry) {
+      if (entry.phase !== currentPhase) {
+        currentPhase = entry.phase;
+        html += '<div class="phase-label" style="color:' + colors[currentPhase] + '">[' + currentPhase + ']</div>';
+      }
+      html += '<div class="line" style="color:' + colors[entry.phase] + '">' +
+        entry.text.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
+    });
+    html += '</body></html>';
+    var w = window.open('', '_blank');
+    w.document.write(html);
+    w.document.close();
   });
 })();
 </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Monkey Mind — Improvisation</title>
+<title>Monkey Mind — Local Improvisation</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -196,7 +196,7 @@
   .overlay-setup { margin-top: 20px; }
   .overlay-setup .hint { font-size: 11px; color: #666; margin-top: 6px; }
 
-  .overlay input {
+  .overlay select {
     font-family: inherit;
     font-size: 13px;
     padding: 8px 12px;
@@ -205,10 +205,11 @@
     border-radius: 0;
     background: #111;
     color: #999;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
-  .overlay input::placeholder { color: #555; }
-  .overlay input:focus { outline: 2px solid #888; border-color: #888; }
+  .overlay select:focus { outline: 2px solid #888; border-color: #888; }
 
   .overlay-bottom {
     grid-column: 2;
@@ -225,7 +226,7 @@
 </head>
 <body>
 
-<div class="overlay" id="overlay" role="dialog" aria-label="Monkey Mind Improvisation — start screen">
+<div class="overlay" id="overlay" role="dialog" aria-label="Monkey Mind Local Improvisation — start screen">
   <div class="top-nav">
     <a href="index.html">duet</a><span class="sep">/</span><a href="portfolio.html">about this piece</a><span class="sep">/</span><a href="https://github.com/curtrode/monkey_mind" target="_blank"><svg height="12" width="12" viewBox="0 0 16 16" style="vertical-align:-1px;margin-right:2px;fill:currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github</a><span class="sep">/</span><a href="https://curtrode.com" target="_blank">curtrode.com</a>
   </div>
@@ -239,11 +240,16 @@
         Then the voice begins to listen to itself. The language drifts
         from mechanical pattern into something like improvisation.
       </p>
+      <p class="overlay-desc">
+        Running locally via Ollama &mdash; no data leaves your machine.
+      </p>
       <div class="overlay-setup">
-        <label for="api-key" class="sr-only">OpenAI API key</label>
-        <input id="api-key" type="password" placeholder="OpenAI API key (required)" aria-describedby="api-key-hint">
-        <div class="hint" id="api-key-hint">for improvisation and AI voice &mdash; or <a href="https://youtu.be/-DCPQpnhN_s" style="color: #888; border-bottom: 1px solid #555;">watch a recorded session</a></div>
-        <div class="hint" id="key-status" aria-live="polite"></div>
+        <label for="model-select" class="sr-only">Ollama model</label>
+        <select id="model-select" aria-describedby="model-hint">
+          <option value="">loading models…</option>
+        </select>
+        <div class="hint" id="model-hint">select a local model &mdash; requires <a href="https://ollama.com" style="color: #888; border-bottom: 1px solid #555;">Ollama</a> running on localhost:11434</div>
+        <div class="hint" id="model-status" aria-live="polite"></div>
       </div>
     </div>
   </div>
@@ -257,14 +263,13 @@
 
 <header class="header">
   <div class="prompt">
-    <button class="cmd" aria-label="Return to start screen">&gt; monkey_mind --improv</button><span class="cursor" aria-hidden="true"></span>
+    <button class="cmd" aria-label="Return to start screen">&gt; monkey_mind --improv --local</button><span class="cursor" aria-hidden="true"></span>
   </div>
   <nav class="controls" aria-label="Controls">
     <span id="phase-display" class="phase-tag stochastic">[stochastic]</span>
     <span id="model-display" class="model-tag"></span>
     <button id="advance-btn" aria-label="Advance phase">[advance]</button>
     <button id="pause-btn" aria-label="Pause">[pause]</button>
-    <button id="mute-btn" aria-label="Toggle listening">[listen]</button>
     <button id="auto-btn" aria-label="Toggle auto-advance">[auto:off]</button>
     <button id="print-btn" aria-label="Print session">[print]</button>
   </nav>
@@ -279,11 +284,11 @@
   'use strict';
 
   // ── Configuration ──
+  var OLLAMA_BASE = 'http://localhost:11434';
   var STOCHASTIC_INTERVAL = 2500;
   var MAX_VISIBLE = 14;
   var IMPROV_INTERVAL = 4000;
   var AUTO_ADVANCE_LINES = { stochastic: 20, echo: 8, bend: 8 };
-  var PHASE_MODELS = { echo: 'gpt-4o-mini', bend: 'gpt-4o', drift: 'gpt-4o' };
 
   // ── Word pools (merged, drawing primarily from "her" voice) ──
   var subjects = [
@@ -318,8 +323,7 @@
   var totalLines = 0;
   var stochasticTimer = null;
   var improvTimer = null;
-  var apiKey = null;
-  var listening = false;
+  var selectedModel = null;
   var autoAdvance = false;
   var generating = false;
   var paused = false;
@@ -331,11 +335,53 @@
   var modelDisplay = document.getElementById('model-display');
   var advanceBtn = document.getElementById('advance-btn');
   var pauseBtn = document.getElementById('pause-btn');
-  var muteBtn = document.getElementById('mute-btn');
   var autoBtn = document.getElementById('auto-btn');
   var printBtn = document.getElementById('print-btn');
   var overlay = document.getElementById('overlay');
-  var apiKeyInput = document.getElementById('api-key');
+  var modelSelect = document.getElementById('model-select');
+  var modelStatus = document.getElementById('model-status');
+
+  // ── Load available Ollama models ──
+  function loadModels() {
+    fetch(OLLAMA_BASE + '/api/tags')
+      .then(function (res) {
+        if (!res.ok) throw new Error('Ollama ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var models = data.models || [];
+        modelSelect.innerHTML = '';
+        if (models.length === 0) {
+          modelSelect.innerHTML = '<option value="">no models found</option>';
+          modelStatus.textContent = 'pull a model with: ollama pull qwen3:8b';
+          return;
+        }
+        models.forEach(function (m) {
+          var opt = document.createElement('option');
+          opt.value = m.name;
+          opt.textContent = m.name;
+          modelSelect.appendChild(opt);
+        });
+        // Flag thinking models (qwen3) — they work but are slower
+        var THINKING_MODELS = ['qwen3'];
+        models.forEach(function (m) {
+          var isThinking = THINKING_MODELS.some(function (t) { return m.name.toLowerCase().indexOf(t) !== -1; });
+          if (isThinking) {
+            var opts = modelSelect.querySelectorAll('option');
+            opts.forEach(function (opt) {
+              if (opt.value === m.name) opt.textContent = m.name + ' (slow — thinking model)';
+            });
+          }
+        });
+        modelStatus.textContent = models.length + ' model' + (models.length > 1 ? 's' : '') + ' available';
+      })
+      .catch(function () {
+        modelSelect.innerHTML = '<option value="">connection failed</option>';
+        modelStatus.textContent = 'is Ollama running? start with: ollama serve';
+      });
+  }
+
+  loadModels();
 
   // ── Stochastic engine ──
   var choose = function (arr) {
@@ -368,86 +414,6 @@
 
     div.scrollIntoView({ behavior: 'smooth', block: 'end' });
   };
-
-  // ── TTS — Browser (machine voice for stochastic phase) ──
-  var cachedVoices = [];
-  function loadVoices() { cachedVoices = speechSynthesis.getVoices(); }
-  loadVoices();
-  if (speechSynthesis.addEventListener) {
-    speechSynthesis.addEventListener('voiceschanged', loadVoices);
-  }
-
-  var pendingUtterances = 0;
-  function speakBrowser(text) {
-    if (pendingUtterances >= 2) return;
-    var utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.375;
-    utterance.pitch = 1.2;
-    if (cachedVoices.length) {
-      var match = cachedVoices.find(function (v) { return v.name.includes('Samantha'); });
-      if (match) utterance.voice = match;
-    }
-    pendingUtterances++;
-    utterance.onend = function () { pendingUtterances--; };
-    utterance.onerror = function () { pendingUtterances--; };
-    speechSynthesis.speak(utterance);
-  }
-
-  // ── TTS — OpenAI (AI voice for improv phases) ──
-  var audioCtx = null;
-  function getAudioCtx() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    return audioCtx;
-  }
-
-  function speakAI(text) {
-    if (!apiKey) return;
-    var ctx = getAudioCtx();
-    if (ctx.state === 'suspended') ctx.resume();
-
-    fetch('https://api.openai.com/v1/audio/speech', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + apiKey,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'tts-1',
-        input: text,
-        voice: 'nova',
-        speed: 0.85
-      })
-    })
-    .then(function (res) {
-      if (!res.ok) throw new Error('TTS ' + res.status);
-      return res.arrayBuffer();
-    })
-    .then(function (buf) { return ctx.decodeAudioData(buf); })
-    .then(function (decoded) {
-      var src = ctx.createBufferSource();
-      src.buffer = decoded;
-      src.connect(ctx.destination);
-      src.start();
-    })
-    .catch(function (err) {
-      console.error('AI speech error:', err.message);
-      speakBrowser(text);
-    });
-  }
-
-  function speak(text) {
-    if (!listening) return;
-    var clean = text.replace(/\(/g, ', ...... , ').replace(/\)/g, ' , ...... , ').replace(/\s+/g, ' ').trim();
-    if (!clean) return;
-
-    if (phase === 'stochastic') {
-      speakBrowser(clean);
-    } else {
-      speakAI(clean);
-    }
-  }
 
   // ── System prompts ──
   var systemPrompts = {
@@ -505,45 +471,73 @@
     }
   };
 
-  // ── OpenAI chat completion ──
+  // ── Pre-warm model into memory ──
+  function warmModel(model) {
+    fetch(OLLAMA_BASE + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: model,
+        messages: [],
+        stream: false,
+        keep_alive: '10m'
+      })
+    }).catch(function () {});
+  }
+
+  // ── Ollama chat completion ──
   function generateLine(callback) {
-    if (!apiKey || generating) return;
+    if (!selectedModel || generating) return;
     generating = true;
 
     var context = contextBuffer.join('\n');
     var prompt = systemPrompts[phase](context);
+    var isThinkingModel = selectedModel.toLowerCase().indexOf('qwen3') !== -1;
 
-    fetch('https://api.openai.com/v1/chat/completions', {
+    fetch(OLLAMA_BASE + '/api/chat', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + apiKey,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: PHASE_MODELS[phase] || 'gpt-4o',
+        model: selectedModel,
         messages: [
           { role: 'system', content: prompt },
           { role: 'user', content: 'Generate the next line.' }
         ],
-        max_tokens: 100,
-        temperature: phase === 'echo' ? 0.7 : phase === 'bend' ? 0.9 : 1.0
+        stream: false,
+        options: {
+          num_predict: isThinkingModel ? 2048 : 100,
+          temperature: phase === 'echo' ? 0.7 : phase === 'bend' ? 0.9 : 1.0
+        }
       })
     })
     .then(function (res) {
       if (!res.ok) {
         return res.text().then(function (body) {
-          throw new Error('API ' + res.status + ': ' + body);
+          throw new Error('Ollama ' + res.status + ': ' + body);
         });
       }
       return res.json();
     })
     .then(function (data) {
       generating = false;
-      var msg = data.choices[0].message;
+      var msg = data.message || {};
       var text = (msg.content || '').trim();
-      // Strip any reasoning traces or markdown formatting
+      // Strip reasoning traces (qwen3 thinking mode leaks)
       text = text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+      // Strip "Okay, the user..." style reasoning preamble
+      text = text.replace(/^(Okay|Let me|I need to|Looking at|The user)[\s\S]*?\n\n/i, '').trim();
       text = text.replace(/^["'`]+|["'`]+$/g, '');
+      // Take only the first line if model generated multiple
+      if (text.indexOf('\n') !== -1) text = text.split('\n')[0].trim();
+      // Thinking models (qwen3) may put everything in a thinking field
+      // Extract the last sentence from thinking as a fallback
+      if (!text && msg.thinking) {
+        var sentences = msg.thinking.match(/[^.!?\n]+[.!?]/g);
+        if (sentences && sentences.length) {
+          text = sentences[sentences.length - 1].trim();
+          text = text.replace(/^["'`]+|["'`]+$/g, '');
+        }
+      }
       if (!text) {
         console.warn('Empty response from model, retrying');
         improvTimer = setTimeout(function () { generateLine(callback); }, IMPROV_INTERVAL);
@@ -555,7 +549,6 @@
       generating = false;
       console.error('Generation error:', err.message);
       addLine('[ generation error — retrying ]', phase);
-      // Keep the loop alive on error
       improvTimer = setTimeout(function () { generateLine(callback); }, IMPROV_INTERVAL);
     });
   }
@@ -564,14 +557,13 @@
   function updatePhaseDisplay() {
     phaseDisplay.textContent = '[' + phase + ']';
     phaseDisplay.className = 'phase-tag ' + phase;
-    var model = PHASE_MODELS[phase];
-    modelDisplay.textContent = model ? 'cloud:' + model : '';
+    modelDisplay.textContent = phase === 'stochastic' ? '' : 'local:' + (selectedModel || '');
   }
 
   function advancePhase() {
     if (phase === 'stochastic') {
-      if (!apiKey) {
-        addLine('[ enter OpenAI API key to enable improvisation ]', 'stochastic');
+      if (!selectedModel) {
+        addLine('[ select a model to enable improvisation ]', 'stochastic');
         return;
       }
       clearTimeout(stochasticTimer);
@@ -596,7 +588,6 @@
     contextBuffer.push(text.trim());
     totalLines++;
     lineCount++;
-    speak(text);
 
     if (autoAdvance && lineCount >= AUTO_ADVANCE_LINES.stochastic) {
       advancePhase();
@@ -617,7 +608,6 @@
       contextBuffer.push(text.trim());
       totalLines++;
       lineCount++;
-      speak(text);
 
       if (autoAdvance && phase !== 'drift') {
         var threshold = AUTO_ADVANCE_LINES[phase];
@@ -635,12 +625,6 @@
     advancePhase();
   });
 
-  muteBtn.addEventListener('click', function () {
-    listening = !listening;
-    if (!listening) speechSynthesis.cancel();
-    muteBtn.textContent = listening ? '[mute]' : '[listen]';
-  });
-
   autoBtn.addEventListener('click', function () {
     autoAdvance = !autoAdvance;
     autoBtn.textContent = autoAdvance ? '[auto:on]' : '[auto:off]';
@@ -650,7 +634,6 @@
     if (!paused) {
       clearTimeout(stochasticTimer);
       clearTimeout(improvTimer);
-      speechSynthesis.cancel();
       paused = true;
       pauseBtn.textContent = '[resume]';
     } else {
@@ -675,8 +658,8 @@
       '.phase-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-top: 24px; margin-bottom: 8px; }' +
       '@media print { body { background: #fff; color: #222; } .phase-label { color: #666 !important; } div.line { color: #222 !important; } }' +
       '</style></head><body>' +
-      '<h1>MONKEY MIND</h1><div class="subtitle">improvisation — session transcript</div>' +
-      '<div style="color:#444;font-size:10px;margin-bottom:24px;letter-spacing:1px">cloud — echo: ' + PHASE_MODELS.echo + ' · bend: ' + PHASE_MODELS.bend + ' · drift: ' + PHASE_MODELS.drift + '</div>';
+      '<h1>MONKEY MIND</h1><div class="subtitle">local improvisation — session transcript</div>' +
+      '<div style="color:#444;font-size:10px;margin-bottom:24px;letter-spacing:1px">local — model: ' + (selectedModel || 'unknown') + '</div>';
     var currentPhase = null;
     phaseLog.forEach(function (entry) {
       if (entry.phase !== currentPhase) {
@@ -695,9 +678,6 @@
   document.querySelector('.cmd').addEventListener('click', function () {
     clearTimeout(stochasticTimer);
     clearTimeout(improvTimer);
-    listening = false;
-    speechSynthesis.cancel();
-    muteBtn.textContent = '[listen]';
 
     phase = 'stochastic';
     contextBuffer = [];
@@ -712,29 +692,20 @@
     updatePhaseDisplay();
 
     overlay.style.display = '';
+    loadModels();
   });
 
   // ── Overlay ──
-  apiKeyInput.addEventListener('click', function (e) { e.stopPropagation(); });
+  modelSelect.addEventListener('click', function (e) { e.stopPropagation(); });
   document.querySelector('.top-nav').addEventListener('click', function (e) { e.stopPropagation(); });
   document.querySelector('.overlay-setup').addEventListener('click', function (e) { e.stopPropagation(); });
 
-  var storedKey = localStorage.getItem('mm_apikey') || null;
-  if (storedKey) {
-    apiKeyInput.value = storedKey;
-    document.getElementById('key-status').textContent = 'saved key found';
-  }
-
   overlay.addEventListener('click', function () {
-    var inputKey = apiKeyInput.value.trim();
-    if (inputKey) {
-      apiKey = inputKey;
-      localStorage.setItem('mm_apikey', inputKey);
-    } else if (storedKey) {
-      apiKey = storedKey;
-    } else {
-      apiKey = null;
-    }
+    selectedModel = modelSelect.value;
+    if (!selectedModel) return;
+
+    // Pre-load model into memory during stochastic phase
+    warmModel(selectedModel);
 
     overlay.style.display = 'none';
     phase = 'stochastic';
